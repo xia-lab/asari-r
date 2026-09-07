@@ -1,0 +1,29 @@
+Package: asariR
+Title: R Reimplementation of Asari Metabolomics Preprocessing
+Version: 0.0.0.9000
+Authors@R:
+    person("Zidong", "Xu", email = "zidong.xu@mail.mcgill.ca", role = c("aut", "cre"))
+Author: Zidong Xu [aut, cre]
+Maintainer: Zidong Xu <zidong.xu@mail.mcgill.ca>
+Description: An R reimplementation of the asari high-resolution mass
+    spectrometry preprocessing workflow. It constructs mass tracks from
+    centroided mzML data, aligns samples, detects chromatographic features,
+    and exports full and preferred feature tables.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports:
+    grDevices,
+    graphics,
+    jsonlite,
+    mzR,
+    parallel,
+    stats,
+    tools,
+    utils
+Suggests:
+    testthat (>= 3.0.0),
+    tcltk,
+    yaml
+Config/testthat/edition: 3

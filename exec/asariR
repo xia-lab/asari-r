@@ -1,0 +1,10 @@
+#!/usr/bin/env Rscript
+
+# 安装R包后，该脚本把Terminal参数原样交给公开CLI入口。
+tryCatch(
+  asariR::asari_cli(commandArgs(trailingOnly = TRUE)),
+  error = function(error) {
+    message("asariR error: ", conditionMessage(error))
+    quit(save = "no", status = 1L)
+  }
+)

@@ -1,0 +1,26 @@
+source("R/default_parameters.R")
+source("R/utils.R")
+source("R/chromatograms.R")
+source("R/mass_functions.R")
+source("R/peaks.R")
+source("R/constructors.R")
+source("R/workflow.R")
+source("R/samples.R")
+source("R/experiment.R")
+source("R/asari_process.R")
+
+params <- default_parameters()
+stopifnot(params$mz_tolerance_ppm == 5)
+stopifnot(params$min_intensity == 1000)
+stopifnot(ppm_to_mz_tolerance(100, 5) == 0.0005)
+stopifnot(ppm_to_mz_tolerance(800, 5) == 0.004)
+stopifnot(asari_default_parameters()$min_intensity_threshold == 1000)
+
+sample <- new_sample("sample_1", "example.mzML")
+stopifnot(sample$name == "sample_1")
+stopifnot(sample$infile == "example.mzML")
+
+experiment <- new_experiment(samples = list(sample), parameters = params)
+stopifnot(length(experiment$samples) == 1)
+
+message("Smoke check passed.")
