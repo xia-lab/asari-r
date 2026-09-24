@@ -67,7 +67,37 @@
     return(lapply(value$`__set__`, .samples_decode_json_tricks))
   }
 
-  lapply(value, .samples_decode_json_tricks)
+  decoded <- lapply(value, .samples_decode_json_tricks)
+
+  # Signal arrays can contain integer-looking JSON values even when their
+  # in-memory R representation was double. Keeping them as 32-bit integers
+  # makes composite tracks overflow when intensities from several samples are
+  # added. Python/numpy integer arrays have a wider range, so use R doubles
+  # for the numeric spectral fields after decoding.
+  if (!is.null(names(decoded))) {
+    for (field in intersect(c("intensity", "mz", "precursor_mz"), names(decoded))) {
+      if (is.atomic(decoded[[field]]) && is.numeric(decoded[[field]])) {
+        decoded[[field]] <- as.numeric(decoded[[field]])
+      }
+    }
+  }
+
+  # jsonlite is intentionally called with simplifyVector = FALSE so arrays of
+  # records keep their Python list structure. That also means plain numeric
+  # JSON arrays (for example a mass track's intensity values) arrive as lists
+  # of scalar values. Collapse only unnamed, non-empty scalar arrays; nested
+  # arrays and dictionaries remain lists.
+  unnamed <- is.null(names(decoded)) || all(!nzchar(names(decoded)))
+  scalar_atomic <- length(decoded) > 0L && all(vapply(
+    decoded,
+    function(item) is.atomic(item) && length(item) == 1L,
+    logical(1)
+  ))
+  if (unnamed && scalar_atomic) {
+    return(unlist(decoded, recursive = FALSE, use.names = FALSE))
+  }
+
+  decoded
 }
 
 # Parse JSON text into an R list and restore common special types for Python json_tricks.

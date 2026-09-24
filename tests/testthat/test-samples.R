@@ -205,7 +205,7 @@ test_that("load_intermediate reads Python pickle and zipped pickle", {
   writeLines(c(
     "import pickle, sys, zipfile",
     "path, zip_path = sys.argv[1:3]",
-    "data = {'list_mass_tracks': [{'id_number': 0, 'mz': 100.25}], 'values': (1, 2)}",
+    "data = {'list_mass_tracks': [{'id_number': 0, 'mz': 100.25, 'intensity': [0, 10, 0]}], 'values': (1, 2)}",
     "with open(path, 'wb') as handle: pickle.dump(data, handle)",
     "with zipfile.ZipFile(zip_path, 'w') as archive: archive.write(path, 'sample.pickle')"
   ), script_path)
@@ -222,6 +222,9 @@ test_that("load_intermediate reads Python pickle and zipped pickle", {
 
   expect_equal(direct, zipped)
   expect_equal(direct$list_mass_tracks[[1L]]$mz, 100.25)
+  expect_true(is.atomic(direct$list_mass_tracks[[1L]]$intensity))
+  expect_type(direct$list_mass_tracks[[1L]]$intensity, "double")
+  expect_equal(direct$list_mass_tracks[[1L]]$intensity, c(0L, 10L, 0L))
   expect_equal(unlist(direct$values), c(1L, 2L))
 })
 

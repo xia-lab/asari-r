@@ -217,6 +217,20 @@ test_that("single sample extraction writes readable ondisk pickle", {
   expect_true(file.exists(outfile))
   expect_equal(restored$sample_id, 3L)
   expect_length(restored$list_mass_tracks, 5L)
+  expect_true(all(vapply(
+    restored$list_mass_tracks,
+    function(track) is.atomic(track$intensity),
+    logical(1)
+  )))
+  expect_true(all(vapply(
+    restored$list_mass_tracks,
+    function(track) typeof(track$intensity) == "double",
+    logical(1)
+  )))
+  expect_equal(
+    restored$list_mass_tracks[[1L]]$intensity,
+    c(0L, 10L, 100L, 10L, 0L)
+  )
   expect_equal(
     lapply(restored$anchor_mz_pairs, unlist, use.names = FALSE),
     list(c(0L, 1L), c(2L, 3L))
